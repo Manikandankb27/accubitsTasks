@@ -8,6 +8,6 @@ const newletterSchema = new Schema({
 	},
 	{	timestamps: true  });
 
-const newletter = mongoose.model('newsletters', newletterSchema);
+const newletter = mongoose.model('newletters', newletterSchema);
 
 export default newletter;

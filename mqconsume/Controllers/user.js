@@ -6,7 +6,10 @@ import { nodemailerUser, nodemailerPass, connURL } from '../Config/config';
 
 // npm
 import nodemailer from "nodemailer";
-import amqp from 'amqplib/callback_api';
+//import amqp from 'amqplib/callback_api';
+
+var amqp = require('amqplib');
+
 
   /**
    * send email from nodemailer
@@ -47,14 +50,10 @@ export const sendOTPToMail = async (data) =>{
   }
 
 
-  
-
-  amqp.connect(connURL, function (err, conn) {
-    conn.createChannel(function (err, ch) {
-        ch.consume('emailDetection', function (msg) {
-          console.log("email",JSON.parse(msg.content))
-          sendOTPToMail(JSON.parse(msg.content))
-            },{ noAck: false }
-        );
-    });
-});
+amqp.connect(connURL).then(function(conn) {
+  return conn.createChannel().then(function(ch) {
+      return ch.consume('emailDetection', function(msg) {
+        sendOTPToMail(JSON.parse(msg.content))
+      }, {noAck: true});
+  });
+}).catch(console.warn);
